@@ -34,14 +34,15 @@ class ConsumeUserCreatedEvents extends Command
             env('RABBITMQ_VHOST', '/')
         );
 
+        $queue = "user_created_queue";
         $channel = $connection->channel();
-        $channel->queue_declare(env('QUEUE_NAME', 'my_queue'), false, true, false, false);
+        $channel->queue_declare(env('QUEUE_NAME', $queue), false, true, false, false);
 
         $callback = function ($msg) {
             $this->processMessage($msg);
         };
 
-        $channel->basic_consume('my_queue', '', false, true, false, false, $callback);
+        $channel->basic_consume($queue, '', false, true, false, false, $callback);
 
         $this->info("Waiting for messages. To exit press CTRL+C\n");
 
