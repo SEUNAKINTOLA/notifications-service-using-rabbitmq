@@ -26,6 +26,10 @@ class ConsumeUserCreatedEvents extends Command
 
     private function consumeMessages()
     {
+
+        //give 50 seconds delay fo rabbitmq server to be ready
+        sleep(50);
+
         $connection = new AMQPStreamConnection(
             env('RABBITMQ_HOST', 'rabbitmq'),
             env('RABBITMQ_PORT', 5672),
@@ -47,7 +51,7 @@ class ConsumeUserCreatedEvents extends Command
         $this->info("Waiting for messages. To exit press CTRL+C\n");
 
         while ($channel->is_consuming()) {
-            $channel->wait(null, false, 3); // Wait for 3 seconds for new messages
+            $channel->wait();
         }
 
         $channel->close();
